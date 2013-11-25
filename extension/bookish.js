@@ -5,23 +5,44 @@ var END = '</span>';
 var $scrollDiv = $('#globalContainer');
 var cachedHeight = $scrollDiv.height();
 
+
+// TODO: actually import a dictionary from CSV.
+// TODO: this should be sorted in order of defn length so phrases take
+// precedence over words.
+var dictionary = {
+  'you': '你',
+  'have': '有',
+  'time': '时间'
+};
+var terms = [];
+
+
+function preprocess() {
+  // Preprocessing step.
+  var definitions = Object.keys(dictionary);
+
+  for (var i = 0, ii = definitions.length; i < ii; i += 1) {
+    var defn = definitions[i];
+    var word = dictionary[defn];
+
+    terms.push({
+      re0: new RegExp('\\b' + defn + '\\b', 'gi'),
+      re1: new RegExp('\\b' + word + '\\b', 'gi'),
+      repl: generateReplacement(defn, word)
+    });
+  }
+}
+
+
+function generateReplacement(defn, word) {
+  return START + defn + MIDDLE + word + END;
+}
+
+
 function findContent() {
   if ($scrollDiv.height() > cachedHeight) {
     var wordCount = 0;
     cachedHeight = $scrollDiv.height();
-
-    // TODO: these should be filled in dynamically.
-    var defn = 'you';
-    var word = '一点';
-
-    // Preprocessing step.
-    var terms = [];
-    // TODO: actually preprocess dynamically.
-    terms[0] = {
-      re0: new RegExp('\\b' + defn + '\\b', 'gi'),
-      re1: new RegExp('\\b' + word + '\\b', 'gi'),
-      repl: START + defn + MIDDLE + word + END
-    };
 
     // We can't avoid going over all of them again, unfortunately, because FB
     // forces a redraw of statuses, stripping the HTML.
@@ -75,4 +96,5 @@ function showTerm() {
   $card.text($card.data('term'));
 }
 
+preprocess();
 findContent();

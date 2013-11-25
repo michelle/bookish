@@ -1,3 +1,6 @@
+var START = '<span class="__bookish-card">';
+var END = '</span>';
+
 var $scrollDiv = $('#globalContainer');
 var cachedHeight = $scrollDiv.height();
 
@@ -7,7 +10,8 @@ function findContent() {
 
     $('.userContent').each(function() {
       var $userContent = $(this);
-      $userContent.text($userContent.text().replace(/fame/gi, '一点'));
+      var newText = $userContent.text().replace(/tough/gi, START + '一点' + END);
+      $userContent.html(newText);
     });
   }
 

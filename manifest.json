@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+
+  "name": "Bookish",
+  "description": "A Chrome extension for the Facebookish.",
+  "version": "0.0.1",
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.facebook.com/*"],
+      "css": ["bookish.css"],
+      "js": ["jquery.js", "bookish.js"]
+    }
+  ],
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "bookish.html"
+  }
+}

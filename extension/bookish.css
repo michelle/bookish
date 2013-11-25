@@ -1,4 +1,6 @@
 .__bookish-card {
   background-color: red;
   color: navajowhite;
+  display: inline-block;
+  cursor: pointer;
 }

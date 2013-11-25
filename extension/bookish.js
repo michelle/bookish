@@ -40,7 +40,7 @@ function generateReplacement(defn, word) {
 
 
 function findContent() {
-  if ($scrollDiv.height() > cachedHeight) {
+  if ($scrollDiv.height() !== cachedHeight) {
     var wordCount = 0;
     cachedHeight = $scrollDiv.height();
 

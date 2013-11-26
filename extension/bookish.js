@@ -3,7 +3,7 @@ var MIDDLE = '">';
 var END = '</span>';
 
 var $scrollDiv = $('#globalContainer');
-var cachedHeight = $scrollDiv.height();
+var cachedHeight = 0;
 
 
 // TODO: actually import a dictionary from CSV.

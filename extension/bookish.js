@@ -4,58 +4,104 @@ var $scrollDiv = $('#globalContainer');
 var cachedHeight = 0;
 
 
-// TODO: actually import a dictionary from CSV.
+// Simple JavaScript Templating
+// John Resig - http://ejohn.org/ - MIT Licensed
+// http://ejohn.org/blog/javascript-micro-templating/
+var template = (function(){
+  var cache = {};
+
+  return function tmpl(str, data){
+    // Figure out if we're getting a template, or if we need to
+    // load the template - and be sure to cache the result.
+    var fn = !/\W/.test(str) ?
+      cache[str] = cache[str] ||
+        tmpl(document.getElementById(str).innerHTML) :
+
+      // Generate a reusable function that will serve as a template
+      // generator (and which will be cached).
+      new Function("obj",
+        "var p=[],print=function(){p.push.apply(p,arguments);};" +
+
+        // Introduce the data as local variables using with(){}
+        "with(obj){p.push('" +
+
+        // Convert the template into pure JavaScript
+        str
+          .replace(/[\r\t\n]/g, " ")
+          .split("<%").join("\t")
+          .replace(/((^|%>)[^\t]*)'/g, "$1\r")
+          .replace(/\t=(.*?)%>/g, "',$1,'")
+          .split("\t").join("');")
+          .split("%>").join("p.push('")
+          .split("\r").join("\\'") +
+        "');}return p.join('');");
+
+    // Provide some basic currying to the user
+    return data ? fn( data ) : fn;
+  };
+})();
+
+
+// TODO: actually import a dictionary from JSON.
 // TODO: this should be sorted in order of defn length so phrases take
 // precedence over words.
 // These should live statically on a remote server.
 // http://developer.chrome.com/extensions/tabs.html#method-sendMessage can be
 // used to change languages via the popup.
-var dictionary = {
-  'you': '你',
-  'have': '有',
-  'time': '时间',
-  'turkey': '火鸡'
-};
-var terms = [];
-
+var dictionary = [
+  {
+    'word': '我的',
+    'pinyin': 'wo3de5',
+    'defn': 'my'
+  },
+  {
+    'word': '你',
+    'pinyin': 'ni3',
+    'defn': 'you'
+  },
+  {
+    'word': '有',
+    'pinyin': 'you3',
+    'defn': 'have'
+  },
+  {
+    'word': '时间',
+    'pinyin': 'shi2jian1',
+    'defn': 'time'
+  },
+  {
+    'word': '火鸡',
+    'defn': 'turkey',
+    'pinyin': 'huo3ji1'
+  }
+];
+var definitionLookup = {};
 
 function preprocess() {
   // Preprocessing step.
-  var definitions = Object.keys(dictionary);
+  dictionary.forEach(function(term) {
+    definitionLookup[term.defn] = term;
+  });
+}
 
-  for (var i = 0, ii = definitions.length; i < ii; i += 1) {
-    var defn = definitions[i];
-    var word = dictionary[defn];
+var BOOKISH_REPLACEMENT_TEMPLATE = '<span class="__bookish-card">' +
+    '<span class="b-word"><%= word %></span>' +
+    '<span class="b-defn b-hidden"><%= defn %></span>' +
+    '<span class="b-pinyin b-hidden"><%= pinyin %></span>' +
+    '</span>';
 
-    terms.push({
-      re0: new RegExp('\\b' + defn + '\\b', 'gi'),
-      re1: new RegExp('\\b' + word + '\\b', 'gi'),
-      repl: generateReplacement(defn, word),
-      word: word,
-      defn: defn
-    });
+
+function lookupAndReplace(defn) {
+  var term = definitionLookup[defn.toLocaleLowerCase()];
+  if (!term) {
+    return defn;
   }
-}
 
-function generateSpan(className) {
-  className = className || '';
-  return '<span class="' + className + '">';
-}
-
-function generateReplacement(defn, word) {
-  var replacement = generateSpan('__bookish-card');
-
-  replacement += generateSpan('b-word');
-  replacement += word;
-  replacement += END_SPAN;
-
-  // Hide definition at first.
-  replacement += generateSpan('b-defn b-hidden');
-  replacement += defn;
-  replacement += END_SPAN;
-
-  replacement += END_SPAN;
-  return replacement;
+  return template(BOOKISH_REPLACEMENT_TEMPLATE, {
+    word: term.word,
+    defn: defn,
+    pinyin: term.pinyin
+  });
 }
 
 
@@ -76,21 +122,8 @@ function findContent() {
       }
 
       var text = $userContent.text();
-      var newText = text;
-      var numRepl = 0;
-      var maxRepl = Math.ceil(text.split(' ').length / 4);
-
-      // TODO: repls should be spaced apart. :(
-      for (var i = 0, ii = terms.length; i < ii && numRepl < maxRepl; i += 1) {
-        var term = terms[i];
-        if (newText.indexOf(term.defn) !== -1) {
-          newText = newText.replace(term.re0, term.repl);
-          numRepl += 1;
-        } else if (newText.indexOf(term.word) !== -1) {
-          newText = newText.replace(term.re1, term.repl);
-          numRepl += 1;
-        }
-      }
+      // TODO: figure out a way to handle multi-word replacements
+      var newText = text.split(' ').map(lookupAndReplace).join(' ');
 
       if (newText !== text) {
         $userContent.html(newText);
@@ -105,6 +138,7 @@ function findContent() {
 $scrollDiv.on('click', '.__bookish-card', function() {
   toggleTerm.call(this);
 });
+
 
 // TODO: a toggle-all?
 function toggleTerm() {

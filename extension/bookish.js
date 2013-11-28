@@ -93,7 +93,7 @@ var BOOKISH_REPLACEMENT_TEMPLATE = '<span class="__bookish-card">' +
 function lookupAndReplace(defn) {
   var term = definitionLookup[defn.toLocaleLowerCase()];
   if (!term) {
-    return defn;
+    return false;
   }
 
   return template(BOOKISH_REPLACEMENT_TEMPLATE, {
@@ -101,6 +101,14 @@ function lookupAndReplace(defn) {
     defn: defn,
     pinyin: term.pinyin
   });
+}
+
+function attemptReplacement(tokens, index, length) {
+  var defn = tokens[index];
+  for (var i = index + 1; i < index + length && tokens[i]; i++) {
+    defn += ' ' + tokens[i];
+  }
+  return lookupAndReplace(defn);
 }
 
 
@@ -120,9 +128,32 @@ function findContent() {
         return;
       }
 
-      var text = $userContent.text();
-      // TODO: figure out a way to handle multi-word replacements
-      var newText = text.split(' ').map(lookupAndReplace).join(' ');
+      var text = $userContent.text(),
+          tokens = text.split(' '),
+          newText = [];
+      var i = 0, ii = tokens.length;
+      while (i < ii) {
+        var replacement;
+        for (var j = 4; j > 0; j -= 1) {
+          replacement = attemptReplacement(tokens, i, j);
+          if (replacement) {
+            newText.push(replacement);
+            break;
+          }
+        }
+
+        if (replacement) {
+          // Advance by the number of words consumed
+          i += j;
+        } else {
+          // Advance the window forward by one word and give up on tokens[i]
+          newText.push(tokens[i]);
+          i += 1;
+        }
+        replacement = false;
+      }
+
+      newText = newText.join(' ');
 
       if (newText !== text) {
         $userContent.html(newText);

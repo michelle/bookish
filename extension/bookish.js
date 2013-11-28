@@ -37,7 +37,7 @@ var template = (function(){
         "');}return p.join('');");
 
     // Provide some basic currying to the user
-    return data ? fn( data ) : fn;
+    return data ? fn(data) : fn;
   };
 })();
 
@@ -48,7 +48,7 @@ var template = (function(){
 // These should live statically on a remote server.
 // http://developer.chrome.com/extensions/tabs.html#method-sendMessage can be
 // used to change languages via the popup.
-var dictionary = [
+var deprecatedDictionary = [
   {
     'word': '我的',
     'pinyin': 'wo3de5',
@@ -79,8 +79,13 @@ var definitionLookup = {};
 
 function preprocess() {
   // Preprocessing step.
-  dictionary.forEach(function(term) {
-    definitionLookup[term.defn] = term;
+  // Hardcoded static file for now.
+  $.getJSON('http://cdn.peerjs.com/bookish/integrated_chinese.csv.json', function(dictionary) {
+    console.log(dictionary);
+    dictionary.forEach(function(term) {
+      definitionLookup[term.defn] = term;
+    });
+    findContent();
   });
 }
 
@@ -97,9 +102,9 @@ function lookupAndReplace(defn) {
   }
 
   return template(BOOKISH_REPLACEMENT_TEMPLATE, {
-    word: term.word,
+    word: term.term,
     defn: defn,
-    pinyin: term.pinyin
+    pinyin: term.pron
   });
 }
 
@@ -178,4 +183,3 @@ function toggleTerm() {
 }
 
 preprocess();
-findContent();

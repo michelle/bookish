@@ -7,6 +7,9 @@ var cachedHeight = 0;
 // TODO: actually import a dictionary from CSV.
 // TODO: this should be sorted in order of defn length so phrases take
 // precedence over words.
+// These should live statically on a remote server.
+// http://developer.chrome.com/extensions/tabs.html#method-sendMessage can be
+// used to change languages via the popup.
 var dictionary = {
   'you': '你',
   'have': '有',
@@ -92,7 +95,7 @@ $scrollDiv.on('click', '.__bookish-card', function() {
   toggleTerm.call(this);
 });
 
-
+// TODO: a toggle-all?
 function toggleTerm() {
   $card = $(this);
   $card.find('.b-defn').toggleClass('b-hidden');

@@ -13,7 +13,8 @@ var cachedHeight = 0;
 var dictionary = {
   'you': '你',
   'have': '有',
-  'time': '时间'
+  'time': '时间',
+  'turkey': '火鸡'
 };
 var terms = [];
 
@@ -29,7 +30,9 @@ function preprocess() {
     terms.push({
       re0: new RegExp('\\b' + defn + '\\b', 'gi'),
       re1: new RegExp('\\b' + word + '\\b', 'gi'),
-      repl: generateReplacement(defn, word)
+      repl: generateReplacement(defn, word),
+      word: word,
+      defn: defn
     });
   }
 }
@@ -74,11 +77,19 @@ function findContent() {
 
       var text = $userContent.text();
       var newText = text;
+      var numRepl = 0;
+      var maxRepl = Math.ceil(text.split(' ').length / 4);
 
-      for (var i = 0, ii = terms.length; i < ii; i += 1) {
+      // TODO: repls should be spaced apart. :(
+      for (var i = 0, ii = terms.length; i < ii && numRepl < maxRepl; i += 1) {
         var term = terms[i];
-        newText = newText.replace(term.re0, term.repl);
-        newText = newText.replace(term.re1, term.repl);
+        if (newText.indexOf(term.defn) !== -1) {
+          newText = newText.replace(term.re0, term.repl);
+          numRepl += 1;
+        } else if (newText.indexOf(term.word) !== -1) {
+          newText = newText.replace(term.re1, term.repl);
+          numRepl += 1;
+        }
       }
 
       if (newText !== text) {

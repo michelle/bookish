@@ -1,6 +1,4 @@
-var START = '<span class="__bookish-card" data-original="';
-var MIDDLE = '">';
-var END = '</span>';
+var END_SPAN = '</span>';
 
 var $scrollDiv = $('#globalContainer');
 var cachedHeight = 0;
@@ -33,9 +31,25 @@ function preprocess() {
   }
 }
 
+function generateSpan(className) {
+  className = className || '';
+  return '<span class="' + className + '">';
+}
 
 function generateReplacement(defn, word) {
-  return START + defn + MIDDLE + word + END;
+  var replacement = generateSpan('__bookish-card');
+
+  replacement += generateSpan('b-word');
+  replacement += word;
+  replacement += END_SPAN;
+
+  // Hide definition at first.
+  replacement += generateSpan('b-defn b-hidden');
+  replacement += defn;
+  replacement += END_SPAN;
+
+  replacement += END_SPAN;
+  return replacement;
 }
 
 
@@ -49,6 +63,12 @@ function findContent() {
     $('.userContent').each(function() {
 
       var $userContent = $(this);
+
+      // Avoid redrawing statuses that've already been processed.
+      if ($userContent.find('.__bookish-card').length) {
+        return;
+      }
+
       var text = $userContent.text();
       var newText = text;
 
@@ -68,32 +88,15 @@ function findContent() {
   setTimeout(findContent, 1000);
 }
 
-$scrollDiv.on('mouseenter', '.__bookish-card', function() {
-  showOriginal.call(this);
-});
-$scrollDiv.on('touchstart', '.__bookish-card', function() {
-  showOriginal.call(this);
-});
-
-$scrollDiv.on('mouseleave', '.__bookish-card', function() {
-  showTerm.call(this);
-});
-$scrollDiv.on('touchend', '.__bookish-card', function() {
-  showTerm.call(this);
+$scrollDiv.on('click', '.__bookish-card', function() {
+  toggleTerm.call(this);
 });
 
 
-function showOriginal() {
+function toggleTerm() {
   $card = $(this);
-  if (!$card.data('term')) {
-    $card.data('term', $card.text());
-  }
-  $card.text($card.data('original'));
-}
-
-function showTerm() {
-  $card = $(this);
-  $card.text($card.data('term'));
+  $card.find('.b-defn').toggleClass('b-hidden');
+  $card.find('.b-word').toggleClass('b-hidden');
 }
 
 preprocess();

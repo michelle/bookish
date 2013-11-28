@@ -1,6 +1,24 @@
-.__bookish-card {
-  background-color: red;
-  color: navajowhite;
+.__bookish-card span {
+  text-shadow: 0 1px 0 rgba(255,255,255,0.7);
   display: inline-block;
   cursor: pointer;
+  padding: 2px 5px;
+  font-weight: 600;
+  border-radius: 3px;
+}
+
+.__bookish-card .b-hidden {
+  display: none;
+}
+
+.__bookish-card .b-word {
+  background-color: #00D2FF;
+  border-bottom: 3px solid #006980;
+  color: #003540;
+}
+
+.__bookish-card .b-defn {
+  background-color: #FFC853;
+  border-bottom: 3px solid #ED593B;
+  color: #AB402B;
 }

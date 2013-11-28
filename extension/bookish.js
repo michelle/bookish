@@ -85,9 +85,8 @@ function preprocess() {
 }
 
 var BOOKISH_REPLACEMENT_TEMPLATE = '<span class="__bookish-card">' +
-    '<span class="b-word"><%= word %></span>' +
+    '<span class="b-word" title="<%= pinyin %>"><%= word %></span>' +
     '<span class="b-defn b-hidden"><%= defn %></span>' +
-    '<span class="b-pinyin b-hidden"><%= pinyin %></span>' +
     '</span>';
 
 

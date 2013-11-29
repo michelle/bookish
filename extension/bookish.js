@@ -79,12 +79,10 @@ function preprocess() {
   $.getJSON('http://cdn.peerjs.com/bookish/integrated_chinese.csv.json', function(dictionary) {
     // We want to go through this backwards as a rule because usually the more
     // obscure words come later.
-    console.time('getJSON')
     for (var i = dictionary.length - 1; i >= 0; i -= 1) {
       var term = dictionary[i];
       definitionLookup[term.defn] = term;
     }
-    console.timeEnd('getJSON')
     findContent();
   });
 }
@@ -174,7 +172,6 @@ function findContent() {
       newText = newText.join(' ');
 
       if (newText !== text) {
-        console.log('html it');
         $userContent.html(newText);
       }
 

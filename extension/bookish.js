@@ -82,9 +82,12 @@ function preprocess() {
   // Hardcoded static file for now.
   $.getJSON('http://cdn.peerjs.com/bookish/integrated_chinese.csv.json', function(dictionary) {
     console.log(dictionary);
-    dictionary.forEach(function(term) {
+    // We want to go through this backwards as a rule because usually the more
+    // obscure words come later.
+    for (var i = dictionary.length - 1; i >= 0; i -= 1) {
+      var term = dictionary[i];
       definitionLookup[term.defn] = term;
-    });
+    }
     findContent();
   });
 }

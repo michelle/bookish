@@ -17,7 +17,7 @@ var fs = require('fs');
 
 
 // TODO: there must be a better way...
-var BLACKLIST = ['like', 'that', 'in', 'is', 'so', 'from'];
+var BLACKLIST = ['like', 'that', 'in', 'is', 'so', 'from', 'a'];
 
 
 var TERM_FIELD = argv.term || 'Term';

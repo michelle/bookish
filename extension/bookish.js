@@ -42,10 +42,6 @@ var template = (function(){
 })();
 
 
-// TODO: actually import a dictionary from JSON.
-// TODO: this should be sorted in order of defn length so phrases take
-// precedence over words.
-// These should live statically on a remote server.
 // http://developer.chrome.com/extensions/tabs.html#method-sendMessage can be
 // used to change languages via the popup.
 var deprecatedDictionary = [

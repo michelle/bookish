@@ -17,7 +17,7 @@ var fs = require('fs');
 
 
 // TODO: there must be a better way...
-var BLACKLIST = ['like', 'that', 'in', 'is']
+var BLACKLIST = ['like', 'that', 'in', 'is', 'so', 'from'];
 
 
 var TERM_FIELD = argv.term || 'Term';
@@ -56,7 +56,7 @@ function splitDefns(data) {
       var def = definitions[j];
       if (def && BLACKLIST.indexOf(def) === -1) {
         splitData.push({
-          defn: def.split(/^to /).pop(),
+          defn: stripDefinition(def),
           term: entry.term,
           pron: entry.pron
         });
@@ -64,6 +64,10 @@ function splitDefns(data) {
     }
   }
   return splitData;
+}
+
+function stripDefinition(def) {
+  return def.split(/^to /).pop().split(' (').shift().split(') ').pop();
 }
 
 function writeJSON(data) {

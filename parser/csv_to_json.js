@@ -53,10 +53,10 @@ function splitDefns(data) {
     var entry = data[i];
     var definitions = entry.defn.split(DEFN_SEPARATOR);
     for (var j = 0, jj = definitions.length; j < jj; j += 1) {
-      var def = definitions[j];
+      var def = stripDefinition(definitions[j]);
       if (def && BLACKLIST.indexOf(def) === -1) {
         splitData.push({
-          defn: stripDefinition(def),
+          defn: def,
           term: entry.term,
           pron: entry.pron
         });

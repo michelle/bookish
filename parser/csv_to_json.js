@@ -45,6 +45,7 @@ function processFilteredData(data) {
 
 function splitDefns(data) {
   var splitData = [];
+  // TODO: remove leading 'to's, since those typically signify verbs.
   for (var i = 0, ii = data.length; i < ii; i += 1) {
     var entry = data[i];
     var definitions = entry.defn.split(DEFN_SEPARATOR);

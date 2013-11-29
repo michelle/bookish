@@ -77,7 +77,6 @@ function preprocess() {
   // Preprocessing step.
   // Hardcoded static file for now.
   $.getJSON('http://cdn.peerjs.com/bookish/integrated_chinese.csv.json', function(dictionary) {
-    console.log(dictionary);
     // We want to go through this backwards as a rule because usually the more
     // obscure words come later.
     for (var i = dictionary.length - 1; i >= 0; i -= 1) {
@@ -92,7 +91,8 @@ var BOOKISH_REPLACEMENT_TEMPLATE = '<span class="__bookish-card">' +
     '<span class="b-word" title="<%= pinyin %>"><%= word %></span>' +
     '<span class="b-defn b-hidden"><%= defn %></span>' +
     '</span>';
-
+// Space between replacements.
+var BUFFER = 1;
 
 function lookupAndReplace(defn) {
   var term = definitionLookup[defn.toLocaleLowerCase()];
@@ -132,6 +132,8 @@ function findContent() {
         return;
       }
 
+      // TODO: currently words attached to punctuation will never be translated!
+      // :(
       var text = $userContent.text(),
           tokens = text.split(' '),
           newText = [];
@@ -148,13 +150,12 @@ function findContent() {
 
         if (replacement) {
           // Advance by the number of words consumed
-          i += j;
+          i += j + BUFFER;
         } else {
           // Advance the window forward by one word and give up on tokens[i]
           newText.push(tokens[i]);
           i += 1;
         }
-        replacement = false;
       }
 
       newText = newText.join(' ');

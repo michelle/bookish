@@ -16,6 +16,10 @@ var csv = require('csv');
 var fs = require('fs');
 
 
+// TODO: there must be a better way...
+var BLACKLIST = ['like', 'that', 'in', 'is']
+
+
 var TERM_FIELD = argv.term || 'Term';
 var DEFN_FIELD = argv.definition || 'Definition';
 var PRON_FIELD = argv.pronunciation || 'Pronunciation';
@@ -45,16 +49,14 @@ function processFilteredData(data) {
 
 function splitDefns(data) {
   var splitData = [];
-  // TODO: remove leading 'to's, since those typically signify verbs.
-  // TODO: filter out common words that are often very contextual.
   for (var i = 0, ii = data.length; i < ii; i += 1) {
     var entry = data[i];
     var definitions = entry.defn.split(DEFN_SEPARATOR);
     for (var j = 0, jj = definitions.length; j < jj; j += 1) {
       var def = definitions[j];
-      if (def) {
+      if (def && BLACKLIST.indexOf(def) === -1) {
         splitData.push({
-          defn: def,
+          defn: def.split(/^to /).pop(),
           term: entry.term,
           pron: entry.pron
         });

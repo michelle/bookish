@@ -150,7 +150,18 @@ function findContent() {
 
         if (replacement) {
           // Advance by the number of words consumed
-          i += j + BUFFER;
+          i += j;
+
+          // Skip BUFFER amount of words so we don't get overwhelmed by context.
+          var k = i + BUFFER;
+          while (i < k) {
+            if (tokens[i]) {
+              newText.push(tokens[i]);
+              i += 1;
+            } else {
+              break;
+            }
+          }
         } else {
           // Advance the window forward by one word and give up on tokens[i]
           newText.push(tokens[i]);

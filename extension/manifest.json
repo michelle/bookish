@@ -14,5 +14,6 @@
   ],
   "permissions": [
     "http://cdn.peerjs.com/*"
-  ]
+  ],
+  "options_page": "options.html"
 }
